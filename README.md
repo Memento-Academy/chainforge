@@ -1,85 +1,65 @@
-# Simple Blockchain in Rust 🦀⛓️
+# ChainForge
 
-A basic blockchain implementation built with Rust, featuring proof-of-work mining, transaction management, and chain validation.
+<div align="center">
+    <img src="https://img.shields.io/badge/Rust-1.70+-DEA584?style=for-the-badge&logo=rust&logoColor=black" alt="Rust" />
+    <img src="https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
+    <img src="https://img.shields.io/badge/SHA--256-Cryptography-00C853?style=for-the-badge&logo=letsencrypt&logoColor=white" alt="SHA-256" />
+    <img src="https://img.shields.io/badge/Vercel-Deploy-000000?style=for-the-badge&logo=vercel" alt="Vercel" />
+</div>
 
-## Features ✨
+<p align="center">
+    <i>An interactive blockchain simulator with real-time proof-of-work mining, transaction management, and chain validation. Dual implementation in Rust (CLI) and JavaScript (Web).</i>
+</p>
 
-- **🔗 Blockchain Structure**: Complete block implementation with cryptographic hashing
-- **💸 Transaction System**: Send and receive transactions between addresses
-- **⛏️ Proof-of-Work Mining**: Configurable difficulty mining algorithm
-- **💰 Balance Tracking**: Real-time balance calculation for all addresses
-- **✅ Chain Validation**: Integrity verification of the entire blockchain
-- **🔒 Immutability**: Tamper detection and prevention
+## Overview
 
-## Quick Start 🚀
+ChainForge is an educational blockchain implementation designed to demonstrate the core mechanics of distributed ledger technology. The project includes a complete Rust CLI implementation and a client-side web application that runs entirely in the browser.
 
-### Prerequisites
+### Core Capabilities
 
-- Rust 1.70 or higher
-- Cargo package manager
+- **Proof-of-Work Mining**: Configurable difficulty with SHA-256 hashing
+- **Transaction System**: Create, queue, and batch transactions into blocks
+- **Balance Tracking**: Real-time balance computation across all addresses
+- **Chain Validation**: Cryptographic integrity verification of the entire chain
+- **Immutability Demonstration**: Tamper detection through hash chain verification
+- **Interactive Web UI**: Visual blockchain explorer with mining animations
 
-### Installation
+---
 
-1. Clone or create a new Rust project:
+## System Architecture
 
-```bash
-cargo new simple_blockchain
-cd simple_blockchain
+```mermaid
+graph TD
+    User([User])
+    Vercel[Vercel - Static Hosting]
+    HTML[HTML / CSS / JS Frontend]
+    BlockchainJS[Blockchain Engine - JavaScript]
+    WebCrypto[Web Crypto API - SHA-256]
+
+    User -- "HTTPS" --> Vercel
+    Vercel -- "Serves" --> HTML
+    HTML -- "Renders" --> BlockchainJS
+    BlockchainJS -- "Hashing" --> WebCrypto
 ```
 
-2. Add dependencies to `Cargo.toml`:
+The web application is fully client-side. Each user runs their own blockchain instance in the browser with no backend dependency. The Rust implementation serves as the reference codebase and CLI tool.
 
-```toml
-[dependencies]
-sha2 = "0.10"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-chrono = { version = "0.4", features = ["serde"] }
-```
+---
 
-3. Replace `src/main.rs` with the blockchain implementation
+## Technology Stack
 
-4. Run the project:
+- **CLI Engine**: [Rust](https://www.rust-lang.org/) with SHA-256 (`sha2`), Serde serialization, Chrono timestamps
+- **Web Engine**: Vanilla JavaScript (ES Modules) with [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)
+- **Frontend**: HTML5, CSS3 (dark mode, glassmorphism, responsive)
+- **Deployment**: [Vercel](https://vercel.com/) (static hosting)
 
-```bash
-cargo run
-```
+---
 
-## Usage Example 📖
+## Data Model
 
-```rust
-use simple_blockchain::*;
+### Transaction
 
-fn main() {
-    // Create a new blockchain
-    let mut blockchain = Blockchain::new();
-
-    // Add transactions
-    blockchain.add_transaction(Transaction::new(
-        "Alice".to_string(),
-        "Bob".to_string(),
-        50.0,
-    ));
-
-    // Mine pending transactions
-    blockchain.mine_pending_transactions("Miner1".to_string());
-
-    // Check balances
-    println!("Alice's balance: {}", blockchain.get_balance("Alice"));
-    println!("Bob's balance: {}", blockchain.get_balance("Bob"));
-
-    // Validate the chain
-    println!("Is blockchain valid? {}", blockchain.is_chain_valid());
-}
-```
-
-## Architecture 🏗️
-
-### Core Components
-
-#### `Transaction`
-
-Represents a transfer of value between two addresses:
+Represents a transfer of value between two addresses.
 
 ```rust
 pub struct Transaction {
@@ -89,9 +69,9 @@ pub struct Transaction {
 }
 ```
 
-#### `Block`
+### Block
 
-Contains transactions and maintains chain integrity:
+Contains a batch of transactions and maintains chain integrity through cryptographic linking.
 
 ```rust
 pub struct Block {
@@ -104,9 +84,9 @@ pub struct Block {
 }
 ```
 
-#### `Blockchain`
+### Blockchain
 
-Manages the chain of blocks and mining operations:
+Manages the ordered chain of blocks, pending transactions, and mining parameters.
 
 ```rust
 pub struct Blockchain {
@@ -117,135 +97,123 @@ pub struct Blockchain {
 }
 ```
 
-## Key Methods 🔧
+---
 
-### Mining
+## Mining Process
 
-```rust
-// Mine a block with proof-of-work
-block.mine_block(difficulty);
+The blockchain uses a Proof-of-Work consensus mechanism:
 
-// Mine all pending transactions
-blockchain.mine_pending_transactions("miner_address".to_string());
-```
-
-### Validation
-
-```rust
-// Check if the entire blockchain is valid
-let is_valid = blockchain.is_chain_valid();
-
-// Calculate hash for a block
-let hash = block.calculate_hash();
-```
-
-### Balance Management
-
-```rust
-// Get balance for any address
-let balance = blockchain.get_balance("Alice");
-
-// Add transaction to pending pool
-blockchain.add_transaction(transaction);
-```
-
-## Mining Process ⛏️
-
-The blockchain uses a **Proof-of-Work** consensus mechanism:
-
-1. **Transaction Pool**: New transactions are added to a pending pool
+1. **Transaction Pool**: New transactions are added to a pending queue
 2. **Block Creation**: Miner collects pending transactions into a new block
-3. **Hash Calculation**: Block hash is calculated using SHA-256
-4. **Nonce Iteration**: Nonce is incremented until hash meets difficulty target
-5. **Block Addition**: Successfully mined block is added to the chain
-6. **Reward Distribution**: Miner receives mining reward
+3. **Hash Calculation**: Block hash is computed using SHA-256
+4. **Nonce Iteration**: Nonce is incremented until the hash meets the difficulty target
+5. **Block Addition**: Successfully mined block is appended to the chain
+6. **Reward Distribution**: Miner receives a configurable mining reward
 
 ### Difficulty Target
 
-The difficulty determines how many leading zeros the block hash must have:
+The difficulty parameter determines how many leading zeros the block hash must contain:
 
-- Difficulty 1: Hash must start with `0`
-- Difficulty 2: Hash must start with `00`
-- Difficulty 3: Hash must start with `000`
+| Difficulty | Required Prefix | Approximate Time |
+| ---------- | --------------- | ---------------- |
+| 1          | `0`             | Instant          |
+| 2          | `00`            | ~0.1s            |
+| 3          | `000`           | ~1-5s            |
+| 4          | `0000`          | ~10-60s          |
 
-## Security Features 🔒
+---
+
+## Security Model
 
 ### Cryptographic Hashing
 
-- Uses SHA-256 for all hash calculations
-- Each block references the previous block's hash
-- Any tampering breaks the chain validation
+- SHA-256 for all hash computations
+- Each block references the hash of its predecessor
+- Any modification to block data invalidates its hash and breaks the chain
 
 ### Immutability
 
-- Changing any transaction requires re-mining all subsequent blocks
+- Modifying any transaction requires re-mining all subsequent blocks
 - Proof-of-work makes tampering computationally expensive
-- Chain validation detects any modifications
+- Chain validation detects all modifications
 
-### Example Security Check
+### Validation Example
 
 ```rust
 // Attempt to modify a transaction
 blockchain.chain[1].transactions[0].amount = 999999.0;
 
-// Validation will fail
+// Validation will detect the tampering
 assert_eq!(blockchain.is_chain_valid(), false);
 ```
 
-## Configuration ⚙️
+---
+
+## Project Setup
+
+### Rust CLI
+
+#### Prerequisites
+
+- Rust 1.70 or higher
+- Cargo package manager
+
+#### Run
+
+```bash
+cargo run
+```
+
+### Web Application (Local)
+
+Open `frontend/index.html` directly in a browser, or serve it with any static server:
+
+```bash
+# Using Python
+cd frontend && python -m http.server 8080
+
+# Using Node.js
+npx serve frontend
+```
+
+### Deployment to Vercel
+
+1. Push the repository to GitHub
+2. Import the project in [Vercel](https://vercel.com/)
+3. Vercel will detect `vercel.json` and serve the `frontend/` directory
+4. No build command required (static content)
+
+---
+
+## Configuration
 
 ### Adjustable Parameters
 
-- **Mining Difficulty**: Change the number of leading zeros required
-- **Mining Reward**: Set the reward amount for successful mining
-- **Block Size**: Limit the number of transactions per block
+| Parameter       | Default | Description                              |
+| --------------- | ------- | ---------------------------------------- |
+| `difficulty`    | 2       | Number of leading zeros required in hash |
+| `mining_reward` | 100.0   | Tokens awarded to the miner per block    |
 
 ```rust
 let mut blockchain = Blockchain::new();
-blockchain.difficulty = 4;  // Harder mining
-blockchain.mining_reward = 50.0;  // Lower reward
+blockchain.difficulty = 4;       // Harder mining
+blockchain.mining_reward = 50.0; // Lower reward
 ```
 
-## Sample Output 📊
+---
 
-```
-🚀 Starting Simple Blockchain in Rust
+## Future Enhancements
 
-📦 Mining block with pending transactions...
-Mining block 1 with difficulty 2...
-Block mined! Hash: 00a1b2c3d4e5f6789...
-
-💰 BALANCES:
-Alice: -45.0
-Bob: 75.0
-Charlie: -15.0
-Miner1: 100.0
-
-✅ Is blockchain valid? true
-```
-
-## Future Enhancements 🚧
-
-### Planned Features
-
-- **REST API**: HTTP endpoints for blockchain interaction
-- **Persistence**: Save blockchain state to disk
-- **P2P Network**: Multi-node blockchain network
+- **REST API**: HTTP endpoints for blockchain interaction (Actix-web)
+- **Persistence**: Save blockchain state to disk or IndexedDB
+- **P2P Network**: Multi-node blockchain network simulation
 - **Smart Contracts**: Basic contract execution
 - **Wallet Integration**: Key management and digital signatures
 - **Web Interface**: Browser-based blockchain explorer
 
-### API Endpoints (Future)
+---
 
-```
-GET /blockchain          - Get entire blockchain
-GET /balance/:address    - Get address balance
-POST /transaction        - Submit new transaction
-POST /mine              - Mine pending transactions
-GET /block/:index       - Get specific block
-```
-
-## Contributing 🤝
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -253,31 +221,12 @@ GET /block/:index       - Get specific block
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## Performance Considerations 📈
+---
 
-### Optimization Tips
+## License
 
-- **Difficulty Scaling**: Start with low difficulty for testing
-- **Transaction Batching**: Group multiple transactions per block
-- **Memory Management**: Clear processed transactions from memory
-- **Parallel Mining**: Implement multi-threaded mining for better performance
-
-### Benchmarks
-
-- **Block Mining**: ~0.1-10 seconds (depending on difficulty)
-- **Chain Validation**: O(n) where n = number of blocks
-- **Balance Calculation**: O(n\*m) where n = blocks, m = transactions per block
-
-## License 📄
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments 🙏
-
-- Rust community for excellent documentation
-- Satoshi Nakamoto for the original blockchain concept
-- Various blockchain tutorials and educational resources
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Built with ❤️ and Rust 🦀**
+Built with precision for **ChainForge**.
